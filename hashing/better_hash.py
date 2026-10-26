@@ -1,0 +1,45 @@
+def rol(x, n):
+    return ((x << n) | (x >> (8 - n))) & 0xff
+
+def better_hash(msg):
+    state = bytearray(msg.encode())
+
+    for rnd in range(8):
+
+        for i in range(len(state)):
+            state[i] ^= (rnd * 41 + i * 17) & 0xff
+            state[i] = rol(state[i], (rnd + i) & 7)
+
+        for i in range(1, len(state)):
+            state[i] ^= state[i - 1]
+
+        state = state[1:] + state[:1]
+
+    return state.hex()
+
+
+if __name__ == "__main__":
+    def rev_rol(x, n):
+        return ((x >> n) | (x << (8 - n))) & 0xff
+
+    def reverse_better_hash(h):
+        state = bytearray(h)
+        for rnd in range(7, -1, -1):
+            state = state[-1:] + state[:-1]
+
+            for i in range(len(state) - 1, 0, -1):
+                state[i] ^= state[i - 1]
+            for i in range(len(state) - 1, -1, -1):
+                state[i] = rev_rol(state[i], (rnd + i) & 7)
+                state[i] ^= (rnd * 41 + i * 17) & 0xff
+        return state
+
+    message = "HELL"
+    unhash_hashed_message = reverse_better_hash(bytes.fromhex(better_hash(message))).decode()
+    print(unhash_hashed_message)
+    assert unhash_hashed_message == message
+
+
+    HASH = bytes.fromhex("5f070b54361613bca31a123e95321cff154ba64f549bb34fdc7688f10efb569aed4ccbd6ba")
+    print(reverse_better_hash(HASH))
+    print(reverse_better_hash(HASH).decode("ascii"))
