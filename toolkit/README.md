@@ -27,16 +27,36 @@ toolkit/
 
 ## Setup
 
-Uses the existing `../venv` (pycryptodome + gmpy2). gmpy2 just makes big-int
-roots/gcd fast; the library falls back to pure Python without it.
+One command creates/reuses the venv, installs the pinned requirements, and
+installs the toolkit as an editable package:
 
 ```bash
 cd sessions
+./setup.sh
+source venv/bin/activate
+```
+
+After that, **from any directory in the environment**:
+
+```bash
+python -c "import cnscrypto as C; print(C.wiener)"   # importable everywhere
+cns-rsa <challenge.json>      cns-factor <N> -e 65537
+cns-elgamal <challenge.json>  cns-dlog -g 2 -t 22 -p 29
+cns-dsa <challenge.json>
+```
+
+The install is *editable*: editing `cnscrypto.py` takes effect immediately.
+Re-run `./setup.sh` only after adding a **new** module or `cns-*` command
+(it registers the new entry points). gmpy2 just makes big-int roots/gcd fast;
+the library falls back to pure Python without it.
+
+```bash
 ./venv/bin/python toolkit/cnscrypto.py     # self-test
 ./venv/bin/python toolkit/test_toolkit.py  # reproduce solved flags + related attacks
 ```
 
-In the lab, put `cnscrypto.py` next to your solve script (or `sys.path.insert`)
+On a bare lab machine where you can't/don't install, the toolkit still works
+standalone: copy `cnscrypto.py` next to your solve script (or `sys.path.insert`)
 and `import cnscrypto as C`.
 
 ## The one tool to open first

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cns-toolkit"
+version = "0.1.0"
+description = "Prepared crypto toolkit for the UAntwerpen CNS hacking sessions"
+requires-python = ">=3.10"
+dependencies = ["pycryptodome", "gmpy2", "requests"]
+
+# Importable from anywhere once installed:  import cnscrypto as C
+# (flat .py files, not a package -- list them explicitly so setuptools does not
+#  try to auto-discover and choke on the multi-module layout.)
+[tool.setuptools]
+py-modules = ["cnscrypto", "remote", "solve_rsa", "solve_elgamal", "solve_dsa", "factor", "dlog"]
+
+# Global commands added to the venv's PATH on install.
+[project.scripts]
+cns-rsa = "solve_rsa:main"
+cns-elgamal = "solve_elgamal:main"
+cns-dsa = "solve_dsa:main"
+cns-factor = "factor:main"
+cns-dlog = "dlog:main"
